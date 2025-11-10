@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#joystick-container {
+    position: absolute;
+    bottom: 30px;
+    left: 50px;
+    width: 150px;
+    height: 150px;
+    display: none; /* Hidden by default, shown via JS for touch devices */
+}
+
+#jump-button-container {
+    position: absolute;
+    bottom: 30px;
+    right: 50px;
+    width: 100px;
+    height: 100px;
+    display: none; /* Hidden by default */
+}
+
+#jump-button {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(0, 0, 0, 0.5);
+    font-size: 1.5em;
+    color: rgba(0,0,0,0.7);
+}
+
+@media (pointer: coarse) {
+    #joystick-container, #jump-button-container {
+        display: block;
+    }
+}
