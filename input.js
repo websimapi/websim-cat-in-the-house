@@ -1,4 +1,5 @@
 import nipplejs from 'nipplejs';
+import * as THREE from 'three';
 
 export class InputController {
     constructor() {
@@ -9,7 +10,7 @@ export class InputController {
             right: false,
             jump: false,
         };
-        this.moveVector = { x: 0, y: 0 };
+        this.moveVector = new THREE.Vector2();
         this.init();
     }
 
