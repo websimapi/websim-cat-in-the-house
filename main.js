@@ -83,7 +83,9 @@ class Game {
         if (!this.player.model) return;
 
         const playerPosition = this.player.gameObject.position;
-        const cameraOffset = new THREE.Vector3(0, 2.5, 4);
+        // Flipped Z from 4 to -3 to be behind the cat, and brought closer.
+        // Y offset also slightly reduced.
+        const cameraOffset = new THREE.Vector3(0, 2, -3);
         
         // Rotate offset with player
         const playerRotation = this.player.gameObject.quaternion;
