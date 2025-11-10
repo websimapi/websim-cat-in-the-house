@@ -82,11 +82,11 @@ class Game {
     updateCamera() {
         if (!this.player.model) return;
 
-        const playerPosition = this.player.model.position;
-        const cameraOffset = new THREE.Vector3(0, 4, 6);
+        const playerPosition = this.player.gameObject.position;
+        const cameraOffset = new THREE.Vector3(0, 2.5, 4);
         
         // Rotate offset with player
-        const playerRotation = this.player.model.quaternion;
+        const playerRotation = this.player.gameObject.quaternion;
         cameraOffset.applyQuaternion(playerRotation);
 
         const targetPosition = new THREE.Vector3().addVectors(playerPosition, cameraOffset);
@@ -98,4 +98,3 @@ class Game {
 }
 
 const game = new Game();
-

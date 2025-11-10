@@ -5,7 +5,10 @@ export class Player {
     constructor(scene, world) {
         this.scene = scene;
         this.world = world;
-        this.model = null;
+        this.model = null; // The visual cat model
+        this.gameObject = new THREE.Group(); // The main object to move and rotate
+        this.scene.add(this.gameObject);
+
         this.mixer = null;
         this.animations = {};
         this.currentAction = null;
@@ -17,6 +20,7 @@ export class Player {
         this.onGround = false;
 
         this.playerCollider = new THREE.Box3();
+        this.playerSize = new THREE.Vector3(0.6, 0.5, 1.2); // w, h, d for collider box
         
         this.loadModel();
     }
@@ -26,7 +30,9 @@ export class Player {
         loader.load('rigged_black_cat_two.glb', (gltf) => {
             this.model = gltf.scene;
             this.model.scale.set(0.5, 0.5, 0.5);
-            this.model.position.y = 1;
+            
+            // Rotate the visual model to face forward correctly
+            this.model.rotation.y = -Math.PI / 2;
             
             this.model.traverse(child => {
                 if (child.isMesh) {
@@ -35,7 +41,7 @@ export class Player {
                 }
             });
 
-            this.scene.add(this.model);
+            this.gameObject.add(this.model);
 
             this.mixer = new THREE.AnimationMixer(this.model);
             const walkAnimation = gltf.animations[0];
@@ -75,10 +81,10 @@ export class Player {
             moveDirection.normalize();
             
             const angle = Math.atan2(moveDirection.x, moveDirection.z);
-            this.model.rotation.y = angle;
+            this.gameObject.rotation.y = angle;
 
             // Move model in its forward direction
-            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.model.quaternion);
+            const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(this.gameObject.quaternion);
             this.velocity.x = forward.x * this.speed;
             this.velocity.z = forward.z * this.speed;
             
@@ -93,9 +99,9 @@ export class Player {
             }
         }
 
-        this.model.position.x += this.velocity.x * delta;
-        this.model.position.z += this.velocity.z * delta;
-        this.model.position.y += this.velocity.y * delta;
+        this.gameObject.position.x += this.velocity.x * delta;
+        this.gameObject.position.z += this.velocity.z * delta;
+        this.gameObject.position.y += this.velocity.y * delta;
 
         this.handleCollisions();
 
@@ -107,13 +113,17 @@ export class Player {
     handleCollisions() {
         if (!this.world || !this.model) return;
 
-        this.playerCollider.setFromObject(this.model);
-
+        // Update collider position based on gameObject
+        this.playerCollider.setFromCenterAndSize(
+            this.gameObject.position.clone().add(new THREE.Vector3(0, this.playerSize.y / 2, 0)),
+            this.playerSize
+        );
+        
         this.onGround = false;
 
         // Floor collision
-        if (this.model.position.y < 0.5) {
-            this.model.position.y = 0.5;
+        if (this.gameObject.position.y < 0) {
+            this.gameObject.position.y = 0;
             this.velocity.y = 0;
             this.onGround = true;
         }
@@ -133,10 +143,10 @@ export class Player {
 
                 if (overlapSize.x < overlapSize.z) {
                     const sign = Math.sign(center.x - colliderCenter.x);
-                    this.model.position.x += sign * overlapSize.x;
+                    this.gameObject.position.x += sign * overlapSize.x;
                 } else {
                     const sign = Math.sign(center.z - colliderCenter.z);
-                    this.model.position.z += sign * overlapSize.z;
+                    this.gameObject.position.z += sign * overlapSize.z;
                 }
             }
         });
